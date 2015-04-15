@@ -11,8 +11,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-        android:background="#353535">
+        android:layout_height="wrap_content"
+        android:background="#353535" >
 
         <EditText
             android:id="@+id/textName"
@@ -34,5 +34,14 @@
             android:src="@android:drawable/ic_menu_send" />
     </LinearLayout>
 
+    <ImageButton
+        android:id="@+id/btn_locate_friends"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:background="@android:color/transparent"
+        android:src="@drawable/track_other"
+        android:visibility="gone" />
 
 </RelativeLayout>

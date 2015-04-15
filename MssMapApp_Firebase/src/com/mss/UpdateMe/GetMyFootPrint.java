@@ -14,6 +14,7 @@ import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
 import com.firebase.client.ValueEventListener;
 
 /**
@@ -23,6 +24,7 @@ import com.firebase.client.ValueEventListener;
 public class GetMyFootPrint extends Activity {
 	private TextView textView;
 	ArrayList<Map<String, Object>> allData;
+	private ArrayList<String> allUsers;
 
 	/*
 	 * (non-Javadoc)
@@ -35,13 +37,19 @@ public class GetMyFootPrint extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.listdata);
 		textView = (TextView) findViewById(R.id.data);
+		allUsers = new ArrayList<String>();
 		allData = new ArrayList<Map<String, Object>>();
-		Firebase ref = new Firebase("https://mssmapapp.firebaseio.com/sarbjot");
-		ref.addValueEventListener(new ValueEventListener() {
+		Firebase ref = new Firebase("https://mssmapapp.firebaseio.com");
+		Query queryRef = ref.orderByChild("time");
+		queryRef.addValueEventListener(new ValueEventListener() {
 			@Override
 			public void onDataChange(DataSnapshot snapshot) {
+				for (DataSnapshot child : snapshot.getChildren()) {
+					allUsers.add(child.getKey());
+					System.out.println("child Name : " + child.getKey());
+				}
 				// textView.setText(snapshot.getValue().toString());
-				System.out.println(snapshot.getValue());
+				System.out.println(snapshot.getValue().toString());
 			}
 
 			@Override
@@ -51,8 +59,8 @@ public class GetMyFootPrint extends Activity {
 			}
 		});
 
-		// Retrieve new posts as they are added to Firebase
-		ref.addChildEventListener(new ChildEventListener() {
+		// Retrieve new posts as they are added to Firebase	
+		queryRef.addChildEventListener(new ChildEventListener() {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void onChildAdded(DataSnapshot snapshot,
