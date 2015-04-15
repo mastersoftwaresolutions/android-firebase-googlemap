@@ -5,8 +5,13 @@ import java.util.regex.Pattern;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
@@ -23,13 +28,46 @@ public class MainActivity extends Activity {
 	private GoogleMap googleMap;
 	private double latitude;
 	private double longitude;
-	private Firebase mFirebaseRef;
+	private EditText textName;
+	private ImageButton btnsave;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		Firebase.setAndroidContext(this);
+		textName = (EditText) findViewById(R.id.textName);
+		btnsave = (ImageButton) findViewById(R.id.sendButton);
+		btnsave.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				textName.setVisibility(View.GONE);
+				btnsave.setVisibility(View.GONE);
+				utils.setPreference("Name", textName.getText().toString(),
+						getApplicationContext());
+				GPSTracker gps = new GPSTracker(MainActivity.this);
+				if (gps.canGetLocation()) {
+					latitude = gps.getLatitude();
+					longitude = gps.getLongitude();
+					MarkerOptions marker = new MarkerOptions().position(
+							new LatLng(latitude, longitude)).title(
+							"Current Location");
+					googleMap.addMarker(marker);
+					CameraPosition cameraPosition = new CameraPosition.Builder()
+							.target(new LatLng(latitude, longitude)).zoom(10)
+							.build();
+
+					googleMap.animateCamera(CameraUpdateFactory
+							.newCameraPosition(cameraPosition));
+					Intent in = new Intent(getApplicationContext(),
+							GetMyFootPrint.class);
+					startActivity(in);
+				} else {
+					gps.showSettingsAlert();
+				}
+			}
+		});
+
 		// mFirebaseRef = new Firebase("https://mssmapapp.firebaseIO.com");
 		// mFirebaseRef.child("message").setValue(
 		// "Do you have data? You'll love Firebase.");
@@ -59,23 +97,6 @@ public class MainActivity extends Activity {
 
 			// Enable / Disable zooming functionality
 			googleMap.getUiSettings().setZoomGesturesEnabled(true);
-			GPSTracker gps = new GPSTracker(this);
-			if (gps.canGetLocation()) {
-				latitude = gps.getLatitude();
-				longitude = gps.getLongitude();
-				MarkerOptions marker = new MarkerOptions().position(
-						new LatLng(latitude, longitude)).title(
-						"Current Location");
-				googleMap.addMarker(marker);
-				CameraPosition cameraPosition = new CameraPosition.Builder()
-						.target(new LatLng(latitude, longitude)).zoom(10)
-						.build();
-
-				googleMap.animateCamera(CameraUpdateFactory
-						.newCameraPosition(cameraPosition));
-			} else {
-				gps.showSettingsAlert();
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

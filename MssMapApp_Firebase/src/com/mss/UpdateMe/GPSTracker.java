@@ -33,8 +33,10 @@ public class GPSTracker extends Service implements LocationListener {
 	private Firebase mFirebaseRef;
 
 	public GPSTracker(Context context) {
+		String name = utils.getPreference("Name", "anonymous", context);
+		System.out.println("Name :" + name);
 		mFirebaseRef = new Firebase("https://mssmapapp.firebaseIO.com")
-				.child("MSS_MAP_APP");
+				.child(name);
 		this.mContext = context;
 		getLocation();
 	}
